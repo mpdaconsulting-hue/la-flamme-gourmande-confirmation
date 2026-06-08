@@ -42,8 +42,8 @@ import { useState, useEffect } from "react";
   (données fictives, aucun appel réseau) pour que tu puisses la tester.
 */
 
-const FETCH_WEBHOOK_URL = "";      // ← colle ici l'URL du webhook "lecture commande"
-const DECISION_WEBHOOK_URL = "";   // ← colle ici l'URL du webhook "décision restaurateur"
+const FETCH_WEBHOOK_URL = "https://hook.eu2.make.com/x7ijm7qhe1fzhiuqneg931fd94592sgw";      
+const DECISION_WEBHOOK_URL = "https://hook.eu2.make.com/y9uoo7fs2gt428rahlfl3jae3qyczomg";   
 
 const DEMO_ORDER = {
   ok: true,
