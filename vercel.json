@@ -1,1 +1,9 @@
-{ "cleanUrls": true }
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/traiter",
+      "destination": "/index.html"
+    }
+  ]
+}
