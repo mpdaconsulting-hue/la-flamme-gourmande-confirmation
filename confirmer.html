@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>La Flamme Gourmande — Confirmer ma commande</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --braise:#241310; --flamme:#E8521E; --flamme2:#F6913A;
+    --creme:#FBF5EC; --carte:#FFFFFF; --encre:#2A1E18; --doux:#8A7B6E;
+    --vert:#2E7D52; --vert-bg:#E8F2EB; --rouge:#B83A2B; --rouge-bg:#FBEBE6;
+    --bord:#EDE3D6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--creme);color:var(--encre);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px 48px}
+  .header{position:relative;overflow:hidden;background:var(--braise);color:#fff;border-radius:0 0 22px 22px;padding:30px 24px 34px;text-align:center;box-shadow:0 10px 30px -18px rgba(36,19,16,.6)}
+  .header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:120px;background:radial-gradient(120% 90% at 50% 120%, rgba(232,82,30,.55), rgba(246,145,58,.18) 45%, transparent 70%);pointer-events:none}
+  .brand{display:inline-flex;align-items:center;gap:9px;position:relative;z-index:1}
+  .brand svg{width:26px;height:26px;filter:drop-shadow(0 0 8px rgba(246,145,58,.6))}
+  .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:21px;letter-spacing:.2px}
+  .header p{position:relative;z-index:1;margin-top:8px;font-size:13px;color:#E9CBB8;letter-spacing:.3px}
+  .card{background:var(--carte);border:1px solid var(--bord);border-radius:16px;padding:20px;margin-top:16px;box-shadow:0 8px 24px -20px rgba(42,30,24,.4)}
+  .eyebrow{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--doux);font-weight:600}
+  .pickup{margin-top:14px;text-align:center;padding:8px 0 4px}
+  .pickup .label{font-size:13px;color:var(--doux)}
+  .pickup .time{font-family:'Fraunces',serif;font-weight:600;font-size:34px;color:var(--flamme);line-height:1.1;margin-top:2px}
+  .recap-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;gap:10px}
+  .recap-h .name{font-weight:600;font-size:17px}
+  .recap-h .ref{font-size:12px;color:var(--doux);white-space:nowrap}
+  .lines{list-style:none;margin:12px 0 0;border-top:1px dashed var(--bord);padding-top:12px}
+  .line{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:14px}
+  .line .qte{color:var(--flamme);font-weight:600;margin-right:6px}
+  .line .det{display:block;font-size:12px;color:var(--doux);margin-top:1px}
+  .line .mnt{white-space:nowrap;font-variant-numeric:tabular-nums}
+  .total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;border-top:2px solid var(--encre);padding-top:12px;font-weight:600;font-size:17px}
+  .note{margin-top:12px;background:#FAF2E6;border-radius:10px;padding:10px 12px;font-size:13px;color:#6B5A4A}
+  .note b{color:var(--encre)}
+  .actions{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  .btn{font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;border:none;border-radius:12px;padding:15px 18px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .06s ease, filter .15s ease, opacity .15s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn-flamme{background:var(--flamme);color:#fff}
+  .btn-flamme:hover{filter:brightness(1.05)}
+  .btn-ghost{background:#fff;color:var(--encre);border:1.5px solid var(--bord)}
+  .btn-ghost:hover{border-color:var(--flamme);color:var(--flamme)}
+  .btn-rouge{background:var(--rouge);color:#fff}
+  .btn-rouge:hover{filter:brightness(1.05)}
+  .hint{font-size:12px;color:var(--doux);text-align:center;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:5px}
+  .switch{display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--doux);text-decoration:underline;cursor:pointer;background:none;border:none;width:100%;font-family:inherit}
+  .switch:hover{color:var(--encre)}
+  .center{text-align:center;padding:34px 10px}
+  .spinner{width:34px;height:34px;border:3px solid var(--bord);border-top-color:var(--flamme);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .icon-big{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .icon-big svg{width:32px;height:32px}
+  .ok-bg{background:var(--vert-bg)} .ok-bg svg{stroke:var(--vert)}
+  .stop-bg{background:var(--rouge-bg)} .stop-bg svg{stroke:var(--rouge)}
+  .state-title{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin-bottom:6px}
+  .state-text{font-size:14px;color:#6B5A4A;max-width:330px;margin:0 auto}
+  .state-text b{color:var(--encre)}
+  .foot{text-align:center;margin-top:24px;font-size:12px;color:var(--doux)}
+  @media (prefers-reduced-motion: reduce){.spinner{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+  /* =================================================================
+     CONFIG — A REMPLIR PAR MARCO
+     Colle ici les 2 URLs de webhook Make (sans rien apres le token).
+  ================================================================= */
+  var CONFIG = {
+    WEBHOOK_LECTURE:  "https://hook.eu2.make.com/COLLE_ICI_LE_WEBHOOK_DU_SCENARIO_2",
+    WEBHOOK_DECISION: "https://hook.eu2.make.com/COLLE_ICI_LE_WEBHOOK_DU_SCENARIO_4"
+  };
+
+  var root = document.getElementById('root');
+  var params = new URLSearchParams(window.location.search);
+  var REF   = params.get('ref') || '';
+  var TOKEN = params.get('token') || '';
+  var actionParam = (params.get('action') || '').toLowerCase();
+  var startView = ['refuse','refuser','annuler','cancel'].indexOf(actionParam) !== -1 ? 'refuse' : 'confirm';
+
+  var state = { status:'loading', view:startView, order:null, done:null, err:'', sending:false };
+
+  /* --- utilitaires --- */
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function euro(n){ return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' \u20AC'; }
+  function formatHeure(v){
+    if(!v) return null;
+    var d = new Date(v);
+    if (isNaN(d.getTime())) return String(v);
+    var p = function(x){ return String(x).padStart(2,'0'); };
+    return p(d.getDate())+'/'+p(d.getMonth()+1)+' \u00E0 '+p(d.getHours())+'h'+p(d.getMinutes());
+  }
+
+  /* --- icones SVG --- */
+  var FLAME = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C12 2 6 7 6 13a6 6 0 0 0 12 0c0-2.2-1-4-2.2-5.3C15 9 14 9.5 13.5 8 13 6.5 13.5 4 12 2Z" fill="#F6913A" stroke="#E8521E" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 21a3 3 0 0 0 3-3c0-1.6-1.5-2.6-3-4-1.5 1.4-3 2.4-3 4a3 3 0 0 0 3 3Z" fill="#FFD08A"/></svg>';
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  var CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  var LOCK  = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="width:13px;height:13px"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>';
+
+  var HEADER = '<div class="header"><div class="brand">'+FLAME+'<h1>La Flamme Gourmande</h1></div><p>Pizzeria au feu de bois \u00B7 Vagney</p></div>';
+
+  function recapCard(o){
+    var heure = formatHeure(o.heureRetrait);
+    var arts = Array.isArray(o.articles) ? o.articles : [];
+    var lines = arts.map(function(a){
+      return '<li class="line"><span><span class="qte">'+esc(a.quantite)+'\u00D7</span>'+esc(a.nom)+
+        (a.detail ? '<span class="det">'+esc(a.detail)+'</span>' : '')+
+        '</span><span class="mnt">'+euro(a.montantLigne)+'</span></li>';
+    }).join('');
+    return '<div class="card">'+
+      '<div class="recap-h"><span class="name">Bonjour '+esc(o.nomClient||'')+' \uD83D\uDC4B</span><span class="ref">'+esc(o.reference||'')+'</span></div>'+
+      (heure ? '<div class="pickup"><div class="label">Votre commande est pr\u00EAte \u00E0 \u00EAtre retir\u00E9e</div><div class="time">'+esc(heure)+'</div></div>' : '')+
+      '<ul class="lines">'+lines+'</ul>'+
+      '<div class="total"><span>Total</span><span>'+euro(o.total)+'</span></div>'+
+      (o.note ? '<div class="note"><b>Votre note :</b> '+esc(o.note)+'</div>' : '')+
+    '</div>';
+  }
+
+  function render(){
+    var html = HEADER;
+    var o = state.order;
+
+    if(state.status === 'loading'){
+      html += '<div class="wrap"><div class="card center"><div class="spinner"></div><p style="color:var(--doux)">Chargement de votre commande\u2026</p></div></div>';
+    }
+    else if(state.status === 'error'){
+      html += '<div class="wrap"><div class="card center"><div class="icon-big stop-bg">'+CROSS+'</div>'+
+        '<div class="state-title">Un instant</div><p class="state-text">'+esc(state.err)+'</p>'+
+        '<div class="actions"><button class="btn btn-ghost" id="retry">R\u00E9essayer</button></div></div></div>';
+    }
+    else if(state.status === 'done'){
+      var s;
+      var hr = formatHeure(o && o.heureRetrait) || '\u00E0 l\u2019heure convenue';
+      if(state.done === 'refuse'){
+        s = {cls:'stop-bg', icon:CROSS, title:'Commande annul\u00E9e',
+             text:'Votre commande <b>'+esc(o ? o.reference : '')+'</b> a bien \u00E9t\u00E9 annul\u00E9e. Le restaurant en est inform\u00E9. \u00C0 une prochaine fois !'};
+      } else if(state.done === 'en_ligne'){
+        s = {cls:'ok-bg', icon:CHECK, title:'Commande confirm\u00E9e !',
+             text:'C\u2019est not\u00E9. Le paiement en ligne arrive juste apr\u00E8s \u2014 sinon vous pourrez r\u00E9gler au retrait, <b>'+esc(hr)+'</b>.'};
+      } else {
+        s = {cls:'ok-bg', icon:CHECK, title:'Commande confirm\u00E9e !',
+             text:'\u00C0 r\u00E9cup\u00E9rer <b>'+esc(hr)+'</b>. Vous r\u00E9glerez directement <b>au retrait</b>. \u00C0 tout \u00E0 l\u2019heure !'};
+      }
+      html += '<div class="wrap"><div class="card center"><div class="icon-big '+s.cls+'">'+s.icon+'</div>'+
+        '<div class="state-title">'+s.title+'</div><p class="state-text">'+s.text+'</p></div>'+
+        '<p class="foot">La Flamme Gourmande \u00B7 merci de votre confiance</p></div>';
+    }
+    else { /* ready */
+      var dis = state.sending ? 'disabled' : '';
+      var actionCard;
+      if(state.view === 'confirm'){
+        actionCard = '<div class="card"><span class="eyebrow">Derni\u00E8re \u00E9tape</span>'+
+          '<div class="actions">'+
+            '<button class="btn btn-flamme" id="b-online" '+dis+'>'+(state.sending?'Un instant\u2026':'Payer en ligne maintenant')+'</button>'+
+            '<button class="btn btn-ghost" id="b-onsite" '+dis+'>Je paierai au retrait</button>'+
+          '</div>'+
+          '<p class="hint">'+LOCK+' Paiement s\u00E9curis\u00E9 \u00B7 vous confirmez l\u2019heure de retrait propos\u00E9e</p>'+
+          '<button class="switch" id="to-refuse" '+dis+'>Je ne peux plus venir \u2014 annuler ma commande</button></div>';
+      } else {
+        actionCard = '<div class="card"><span class="eyebrow">Annulation</span>'+
+          '<p style="margin-top:8px;font-size:15px;color:#6B5A4A">Vous souhaitez annuler la commande <b style="color:var(--encre)">'+esc(o.reference)+'</b> ? Le restaurant sera pr\u00E9venu imm\u00E9diatement.</p>'+
+          '<div class="actions"><button class="btn btn-rouge" id="b-refuse" '+dis+'>'+(state.sending?'Un instant\u2026':'Confirmer l\u2019annulation')+'</button></div>'+
+          '<button class="switch" id="to-confirm" '+dis+'>Finalement, garder ma commande</button></div>';
+      }
+      html += '<div class="wrap">'+recapCard(o)+actionCard+'<p class="foot">Un souci ? Contactez directement le restaurant.</p></div>';
+    }
+
+    root.innerHTML = html;
+    wire();
+  }
+
+  function on(id, fn){ var el = document.getElementById(id); if(el) el.onclick = fn; }
+  function wire(){
+    on('retry', loadOrder);
+    on('b-online', function(){ sendDecision('confirm','en_ligne'); });
+    on('b-onsite', function(){ sendDecision('confirm','sur_place'); });
+    on('b-refuse', function(){ sendDecision('refuse'); });
+    on('to-refuse', function(){ state.view='refuse'; render(); });
+    on('to-confirm', function(){ state.view='confirm'; render(); });
+  }
+
+  function loadOrder(){
+    if(!REF){ state.err='Lien incomplet : r\u00E9f\u00E9rence de commande manquante.'; state.status='error'; render(); return; }
+    state.status='loading'; render();
+    var url = CONFIG.WEBHOOK_LECTURE+'?ref='+encodeURIComponent(REF)+'&token='+encodeURIComponent(TOKEN);
+    fetch(url, {cache:'no-store'})
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(!data || data.ok === false) throw new Error('introuvable');
+        state.order = data; state.status='ready'; render();
+      })
+      .catch(function(){
+        state.err = "Nous n'arrivons pas \u00E0 charger votre commande. V\u00E9rifiez le lien re\u00E7u par e-mail, ou rechargez la page.";
+        state.status='error'; render();
+      });
+  }
+
+  function sendDecision(action, paiement){
+    state.sending = true; render();
+    var qs = new URLSearchParams({ ref:REF, token:TOKEN, action:action });
+    if(paiement) qs.set('paiement', paiement);
+    fetch(CONFIG.WEBHOOK_DECISION+'?'+qs.toString(), {cache:'no-store'})
+      .then(function(r){ return r.json().catch(function(){ return {}; }); })
+      .then(function(data){
+        if(action==='confirm' && paiement==='en_ligne' && data && data.paiementUrl){
+          window.location.href = data.paiementUrl; return;
+        }
+        state.done = (action==='refuse') ? 'refuse' : paiement;
+        state.sending=false; state.status='done'; render();
+      })
+      .catch(function(){
+        state.err = "L'envoi n'a pas abouti. Reste sur cette page et r\u00E9essaie dans un instant.";
+        state.sending=false; state.status='error'; render();
+      });
+  }
+
+  render();
+  loadOrder();
+  </script>
+</body>
+</html>
