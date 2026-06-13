@@ -200,8 +200,7 @@
   function loadOrder(){
     if(!REF){ state.err='Lien incomplet : r\u00E9f\u00E9rence de commande manquante.'; state.status='error'; render(); return; }
     state.status='loading'; render();
-    var url = CONFIG.WEBHOOK_LECTURE+'?ref='+encodeURIComponent(REF)+'&token='+encodeURIComponent(TOKEN);
-    fetch(url, {cache:'no-store'})
+    fetch(CONFIG.WEBHOOK_LECTURE, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ref:REF, token:TOKEN }) })
       .then(function(r){ return r.json(); })
       .then(function(data){
         if(!data || data.ok === false) throw new Error('introuvable');
@@ -222,9 +221,9 @@
 
   function sendDecision(action, paiement){
     state.sending = true; render();
-    var qs = new URLSearchParams({ ref:REF, token:TOKEN, action:action });
-    if(paiement) qs.set('paiement', paiement);
-    fetch(CONFIG.WEBHOOK_DECISION+'?'+qs.toString(), {cache:'no-store'})
+    var payload = { ref:REF, token:TOKEN, action:action };
+    if(paiement) payload.paiement = paiement;
+    fetch(CONFIG.WEBHOOK_DECISION, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
       .then(function(r){ return r.json().catch(function(){ return {}; }); })
       .then(function(data){
         if(action==='confirm' && paiement==='en_ligne' && data && data.paiementUrl){
