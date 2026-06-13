@@ -75,8 +75,8 @@
      Colle ici les 2 URLs de webhook Make (sans rien apres le token).
   ================================================================= */
   var CONFIG = {
-    WEBHOOK_LECTURE:  "https://hook.eu2.make.com/COLLE_ICI_LE_WEBHOOK_DU_SCENARIO_2",
-    WEBHOOK_DECISION: "https://hook.eu2.make.com/COLLE_ICI_LE_WEBHOOK_DU_SCENARIO_4"
+    WEBHOOK_LECTURE:  "https://hook.eu2.make.com/x7ijm7qhe1fzhiuqneg931fd94592sgw",
+    WEBHOOK_DECISION: "https://hook.eu2.make.com/xv55ekdbx983fc1xrvowv1yuv64buel5"
   };
 
   var root = document.getElementById('root');
@@ -90,6 +90,7 @@
 
   /* --- utilitaires --- */
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function norm(s){ return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
   function euro(n){ return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' \u20AC'; }
   function formatHeure(v){
     if(!v) return null;
@@ -153,6 +154,15 @@
         '<div class="state-title">'+s.title+'</div><p class="state-text">'+s.text+'</p></div>'+
         '<p class="foot">La Flamme Gourmande \u00B7 merci de votre confiance</p></div>';
     }
+    else if(state.status === 'already'){
+      var stn = norm(o && o.statut);
+      var cancelled = (stn.indexOf('annul')!==-1 || stn.indexOf('declin')!==-1 || stn.indexOf('refus')!==-1);
+      var hr2 = formatHeure(o && o.heureRetrait);
+      var cls, ic, ttl, txt;
+      if(cancelled){ cls='stop-bg'; ic=CROSS; ttl='Commande annul\u00E9e'; txt='Cette commande a d\u00E9j\u00E0 \u00E9t\u00E9 annul\u00E9e. Aucune action suppl\u00E9mentaire n\u2019est n\u00E9cessaire.'; }
+      else { cls='ok-bg'; ic=CHECK; ttl='Commande d\u00E9j\u00E0 confirm\u00E9e'; txt='Votre commande est confirm\u00E9e'+(hr2?' \u2014 retrait <b>'+esc(hr2)+'</b>':'')+'. \u00C0 tout \u00E0 l\u2019heure !'; }
+      html += '<div class="wrap"><div class="card center"><div class="icon-big '+cls+'">'+ic+'</div><div class="state-title">'+ttl+'</div><p class="state-text">'+txt+'</p></div><p class="foot">La Flamme Gourmande \u00B7 Vagney</p></div>';
+    }
     else { /* ready */
       var dis = state.sending ? 'disabled' : '';
       var actionCard;
@@ -195,7 +205,14 @@
       .then(function(r){ return r.json(); })
       .then(function(data){
         if(!data || data.ok === false) throw new Error('introuvable');
-        state.order = data; state.status='ready'; render();
+        state.order = data;
+        var st = norm(data.statut);
+        if(st.indexOf('confirm')!==-1 || st.indexOf('pay')!==-1 || st.indexOf('annul')!==-1 || st.indexOf('declin')!==-1 || st.indexOf('refus')!==-1){
+          state.status = 'already';
+        } else {
+          state.status = 'ready';
+        }
+        render();
       })
       .catch(function(){
         state.err = "Nous n'arrivons pas \u00E0 charger votre commande. V\u00E9rifiez le lien re\u00E7u par e-mail, ou rechargez la page.";
