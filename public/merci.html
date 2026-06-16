@@ -50,8 +50,10 @@
   .total span:first-child{font-size:16px;font-weight:bold}
   .total span:last-child{font-size:22px;font-weight:bold;color:var(--flamme-d)}
 
-  .paid{margin-top:18px;background:var(--vert-bg);border:1px solid var(--vert-bd);border-radius:12px;
-    padding:13px 16px;font-size:14px;color:#1d5a37;display:flex;align-items:center;gap:8px}
+  .paid{margin-top:16px;background:var(--vert-bg);border:1px solid var(--vert-bd);border-radius:10px;
+    padding:10px 14px;font-size:13.5px;font-weight:bold;color:#1d5a37;display:flex;align-items:center;
+    justify-content:center;gap:8px;text-align:center}
+  .paid .ico{width:17px;height:17px;flex:0 0 auto}
 
   .note{margin-top:14px;background:#fff7ec;border:1px solid #f3dcb5;border-radius:10px;
     padding:12px 14px;font-size:13px;color:var(--ink)}
@@ -129,7 +131,7 @@
       '<div class="sec-title">Votre commande</div>'+
       '<ul class="lines">'+lines+'</ul>'+
       '<div class="total"><span>Total pay\u00E9</span><span>'+euro(o.total)+'</span></div>'+
-      '<div class="paid">'+CHECK.replace('width:34px','')+' &nbsp;Pay\u00E9 en ligne \u2014 rien \u00E0 r\u00E9gler au retrait</div>'.replace(CHECK, '<svg viewBox="0 0 24 24" fill="none" stroke="#2f7d4f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex:0 0 auto"><path d="M5 13l4 4L19 7"/></svg>')+
+      '<div class="paid"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#2f7d4f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg><span>Pay\u00E9 en ligne \u2014 rien \u00E0 r\u00E9gler au retrait</span></div>'+
       (o.note ? '<div class="note"><b>Votre note :</b> '+esc(o.note)+'</div>' : '')+
       '<p class="foot">\u00C0 tout \u00E0 l\u2019heure !<br>La Flamme Gourmande \u00B7 2 rue Robert Claudel, Vagney \u00B7 03 29 26 70 70</p>';
   }
