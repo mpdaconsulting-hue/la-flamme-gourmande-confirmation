@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>La Flamme Gourmande — Paiement confirmé</title>
+<style>
+  :root{
+    --bg:#f4eee4; --card:#ffffff; --ink:#231a13; --doux:#6f6356;
+    --flamme:#e0531c; --flamme-d:#b8410a; --or:#e2a32f;
+    --sombre:#2a1c12; --vert:#2f7d4f; --vert-bg:#eaf6ee; --vert-bd:#bfe0cb;
+    --bd:#ece0cf;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink);
+    -webkit-font-smoothing:antialiased;padding:24px 14px}
+  .wrap{max-width:520px;margin:0 auto}
+
+  .header{background:var(--sombre);border-radius:18px 18px 0 0;padding:22px 26px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand svg{width:30px;height:30px;flex:0 0 auto}
+  .brand h1{margin:0;font-size:21px;font-weight:bold;color:#fff;letter-spacing:.3px}
+  .header p{margin:6px 0 0;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
+
+  .card{background:var(--card);border:1px solid var(--bd);border-top:none;
+    border-radius:0 0 18px 18px;padding:26px 26px 30px;box-shadow:0 8px 28px rgba(0,0,0,.06)}
+
+  .center{text-align:center}
+  .icon-big{width:64px;height:64px;border-radius:50%;margin:4px auto 14px;display:flex;
+    align-items:center;justify-content:center}
+  .ok-bg{background:var(--vert-bg);border:1px solid var(--vert-bd)}
+  .icon-big svg{width:34px;height:34px;stroke:var(--vert);fill:none}
+  .state-title{font-size:23px;font-weight:bold;color:var(--ink)}
+  .state-text{font-size:14px;color:var(--doux);line-height:1.55;margin:8px 0 0}
+
+  .pickup{margin-top:20px;background:#f6ecdc;border-radius:12px;padding:16px;text-align:center}
+  .pickup .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--doux);font-weight:bold}
+  .pickup .time{font-size:21px;font-weight:bold;color:var(--flamme-d);margin-top:5px}
+
+  .sec-title{margin:22px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:1px;
+    color:var(--doux);font-weight:bold}
+  .lines{list-style:none;margin:0;padding:0;border-top:1px solid var(--bd)}
+  .line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #f0e8da;font-size:14px}
+  .qte{color:var(--flamme);font-weight:bold;margin-right:5px}
+  .det{display:block;font-size:12px;color:var(--doux);margin-top:2px}
+  .mnt{white-space:nowrap;font-weight:bold}
+  .total{display:flex;justify-content:space-between;align-items:center;margin-top:10px;
+    border-top:2px solid var(--ink);padding-top:12px}
+  .total span:first-child{font-size:16px;font-weight:bold}
+  .total span:last-child{font-size:22px;font-weight:bold;color:var(--flamme-d)}
+
+  .paid{margin-top:18px;background:var(--vert-bg);border:1px solid var(--vert-bd);border-radius:12px;
+    padding:13px 16px;font-size:14px;color:#1d5a37;display:flex;align-items:center;gap:8px}
+
+  .note{margin-top:14px;background:#fff7ec;border:1px solid #f3dcb5;border-radius:10px;
+    padding:12px 14px;font-size:13px;color:var(--ink)}
+
+  .foot{text-align:center;font-size:12px;color:#9a8773;margin-top:18px;line-height:1.6}
+  .foot a{color:#9a8773;text-decoration:none}
+
+  .spinner{width:34px;height:34px;border:3px solid #e7ddcd;border-top-color:var(--flamme);
+    border-radius:50%;animation:spin .8s linear infinite;margin:8px auto 14px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C12 2 6 7 6 13a6 6 0 0 0 12 0c0-2.2-1-4-2.2-5.3C15 9 14 9.5 13.5 8 13 6.5 13.5 4 12 2Z" fill="#F6913A" stroke="#E8521E" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 21a3 3 0 0 0 3-3c0-1.6-1.5-2.6-3-4-1.5 1.4-3 2.4-3 4a3 3 0 0 0 3 3Z" fill="#FFD08A"/></svg>
+        <h1>La Flamme Gourmande</h1>
+      </div>
+      <p>Pizzeria au feu de bois · Vagney</p>
+    </div>
+    <div class="card" id="app">
+      <div class="center">
+        <div class="spinner"></div>
+        <p style="color:var(--doux)">Confirmation de votre paiement…</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var WEBHOOK_LECTURE = "https://hook.eu2.make.com/x7ijm7qhe1fzhiuqneg931fd94592sgw";
+
+  var params = new URLSearchParams(location.search);
+  var REF = params.get("ref") || "";
+  var TOKEN = params.get("token") || "";
+
+  var app = document.getElementById("app");
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+  function euro(n){ return (Number(n)||0).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" \u20AC"; }
+  function formatHeure(v){
+    if(!v) return null;
+    var d = new Date(v);
+    if(isNaN(d.getTime())) return String(v);
+    var p = function(x){ return String(x).padStart(2,"0"); };
+    return p(d.getDate())+"/"+p(d.getMonth()+1)+" \u00E0 "+p(d.getHours())+"h"+p(d.getMinutes());
+  }
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+
+  function showError(msg){
+    app.innerHTML =
+      '<div class="center"><div class="state-title">Un instant</div>'+
+      '<p class="state-text">'+esc(msg)+'</p>'+
+      '<p class="state-text">Votre paiement a bien \u00E9t\u00E9 encaiss\u00E9 \u2014 vous pouvez fermer cette page en toute s\u00E9r\u00E9nit\u00E9.</p></div>'+
+      '<p class="foot">La Flamme Gourmande \u00B7 2 rue Robert Claudel, Vagney \u00B7 03 29 26 70 70</p>';
+  }
+
+  function render(o){
+    var heure = formatHeure(o.heureRetrait);
+    var arts = Array.isArray(o.articles) ? o.articles : [];
+    var lines = arts.map(function(a){
+      return '<li class="line"><span><span class="qte">'+esc(a.quantite)+'\u00D7</span>'+esc(a.nom)+
+        (a.detail ? '<span class="det">'+esc(a.detail)+'</span>' : '')+
+        '</span><span class="mnt">'+euro(a.montantLigne)+'</span></li>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="center">'+
+        '<div class="icon-big ok-bg">'+CHECK+'</div>'+
+        '<div class="state-title">Paiement confirm\u00E9 \uD83C\uDF89</div>'+
+        '<p class="state-text">Merci '+esc(o.nomClient||"")+' ! Votre paiement est bien re\u00E7u et votre commande <b>'+esc(o.reference||"")+'</b> est confirm\u00E9e. L\u2019\u00E9quipe pr\u00E9pare tout pour l\u2019heure choisie.</p>'+
+      '</div>'+
+      (heure ? '<div class="pickup"><div class="label">Retrait pr\u00E9vu</div><div class="time">'+esc(heure)+'</div></div>' : '')+
+      '<div class="sec-title">Votre commande</div>'+
+      '<ul class="lines">'+lines+'</ul>'+
+      '<div class="total"><span>Total pay\u00E9</span><span>'+euro(o.total)+'</span></div>'+
+      '<div class="paid">'+CHECK.replace('width:34px','')+' &nbsp;Pay\u00E9 en ligne \u2014 rien \u00E0 r\u00E9gler au retrait</div>'.replace(CHECK, '<svg viewBox="0 0 24 24" fill="none" stroke="#2f7d4f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;flex:0 0 auto"><path d="M5 13l4 4L19 7"/></svg>')+
+      (o.note ? '<div class="note"><b>Votre note :</b> '+esc(o.note)+'</div>' : '')+
+      '<p class="foot">\u00C0 tout \u00E0 l\u2019heure !<br>La Flamme Gourmande \u00B7 2 rue Robert Claudel, Vagney \u00B7 03 29 26 70 70</p>';
+  }
+
+  if(!REF){
+    showError("Lien incomplet : r\u00E9f\u00E9rence de commande manquante.");
+  } else {
+    fetch(WEBHOOK_LECTURE, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ ref:REF, token:TOKEN })
+    })
+    .then(function(r){ return r.json().catch(function(){ return null; }); })
+    .then(function(data){
+      if(!data){ showError("Commande introuvable pour le moment."); return; }
+      render(data);
+    })
+    .catch(function(){
+      showError("Impossible de charger le r\u00E9capitulatif.");
+    });
+  }
+</script>
+</body>
+</html>
