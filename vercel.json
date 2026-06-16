@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/confirmer", "destination": "/confirmer.html" },
+    { "source": "/merci", "destination": "/merci.html" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
