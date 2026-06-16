@@ -76,7 +76,8 @@
   ================================================================= */
   var CONFIG = {
     WEBHOOK_LECTURE:  "https://hook.eu2.make.com/x7ijm7qhe1fzhiuqneg931fd94592sgw",
-    WEBHOOK_DECISION: "https://hook.eu2.make.com/xv55ekdbx983fc1xrvowv1yuv64buel5"
+    WEBHOOK_DECISION: "https://hook.eu2.make.com/xv55ekdbx983fc1xrvowv1yuv64buel5",
+    WEBHOOK_SESSION:  "https://hook.eu2.make.com/w4skz684ddzc2snvsy0w672tfi78a2ij"
   };
 
   var root = document.getElementById('root');
@@ -221,14 +222,28 @@
 
   function sendDecision(action, paiement){
     state.sending = true; render();
+
+    // Paiement en ligne -> Scénario 5 (création de la session Stripe) puis redirection
+    if(action==='confirm' && paiement==='en_ligne'){
+      fetch(CONFIG.WEBHOOK_SESSION, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ref:REF, token:TOKEN }) })
+        .then(function(r){ return r.json().catch(function(){ return {}; }); })
+        .then(function(data){
+          if(data && data.url){ window.location.href = data.url; return; }
+          throw new Error('no-url');
+        })
+        .catch(function(){
+          state.err = "Le paiement en ligne n'a pas pu d\u00E9marrer. R\u00E9essaie dans un instant, ou choisis le paiement au retrait.";
+          state.sending=false; state.status='error'; render();
+        });
+      return;
+    }
+
+    // Sur place + annulation -> Scénario 4 (décision client)
     var payload = { ref:REF, token:TOKEN, action:action };
     if(paiement) payload.paiement = paiement;
     fetch(CONFIG.WEBHOOK_DECISION, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
       .then(function(r){ return r.json().catch(function(){ return {}; }); })
       .then(function(data){
-        if(action==='confirm' && paiement==='en_ligne' && data && data.paiementUrl){
-          window.location.href = data.paiementUrl; return;
-        }
         state.done = (action==='refuse') ? 'refuse' : paiement;
         state.sending=false; state.status='done'; render();
       })
